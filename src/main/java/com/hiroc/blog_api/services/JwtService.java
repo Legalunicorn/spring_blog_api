@@ -6,6 +6,7 @@ import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import javax.crypto.SecretKey;
 import java.security.Key;
 import java.util.Date;
 import java.util.HashMap;
@@ -39,12 +40,25 @@ public class JwtService {
         return extractClaim(token,Claims::getSubject);
     }
 
+    public Key getSignInKey(){
+        byte[] key_bytes = Decoders.BASE64.decode(SECRET_KEY);
+        return Keys.hmacShaKeyFor(key_bytes);
+    }
+    //Apprently SecretKey is used for extracting claims now,
+    // Key is depreciated with setSigningkey
+    public SecretKey getSecretKey(){
+        byte[] key_bytes = Decoders.BASE64.decode(SECRET_KEY);
+        return Keys.hmacShaKeyFor(key_bytes);
+    }
+
+
+
     public Claims extractAllClaims(String token){
-        return Jwts.parser()
-                .setSigningKey(getSignInKey())
+        return (Claims) Jwts
+                .parser()
+                .verifyWith(getSecretKey())
                 .build()
-                .parseClaimsJws(token)
-                .getBody();
+                .parseSignedClaims(token);
     }
 
     public String generateToken(UserDetails userDetails){
@@ -63,10 +77,7 @@ public class JwtService {
                     .compact();
     }
 
-    public Key getSignInKey(){
-        byte[] key_bytes = Decoders.BASE64.decode(SECRET_KEY);
-        return Keys.hmacShaKeyFor(key_bytes);
-    }
+
 
 
 }
