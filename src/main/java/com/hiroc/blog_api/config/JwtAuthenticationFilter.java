@@ -6,6 +6,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -16,6 +17,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final JwtService jwtService;
     private final UserDetailsService userDetailsService;
@@ -31,7 +33,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
 
         final String jwt = authHeader.substring(7);
-        final String username = jwtService.extractUsername(jwt);
+        String username = null;
+        try{
+            username = jwtService.extractUsername(jwt);
+        } catch(Exception e){
+            log.warn("JWT Token has expired or is invalid {} ",e.getMessage());
+        }
+//        final String username = jwtService.extractUsername(jwt);
         if (username !=null && SecurityContextHolder.getContext().getAuthentication()==null){
             //User is not stored in the SecurityContext
             //We have a non null username (valid) with us
@@ -45,7 +53,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 SecurityContextHolder.getContext().setAuthentication(token);
 
             }
-
             //Move along the next filter
             filterChain.doFilter(request,response);
         }
