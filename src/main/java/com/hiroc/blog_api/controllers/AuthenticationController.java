@@ -22,7 +22,7 @@ public class AuthenticationController {
     private final AuthenticationService authenticationService;
     private static final Logger log = LoggerFactory.getLogger(AuthenticationController.class);
 
-    @PostMapping("/register")
+    @PostMapping("/login")
     public ResponseEntity<AuthenticationResponse> login(
             @RequestBody LoginRequest request
     ){
@@ -31,10 +31,11 @@ public class AuthenticationController {
         return ResponseEntity.ok(response);
     }
 
-    @PostMapping("/login")
+    @PostMapping("/register")
     public ResponseEntity<AuthenticationResponse> register(
             @RequestBody RegisterRequest request)
     {
+        log.info("Registering from controller" );
         return ResponseEntity.ok(authenticationService.register(request));
     }
 }

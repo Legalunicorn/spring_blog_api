@@ -4,80 +4,77 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.stereotype.Service;
 
 import javax.crypto.SecretKey;
-import java.security.Key;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
+@Service
 public class JwtService {
 
-//    @Value("#{security.secret}")
-    private static final String SECRET_KEY = "fk";
+    @Value("${security.secret}")
+    private String SECRET_KEY;
 
-    public <T> T extractClaim(String token, Function<Claims,T> claimsResolver){
-        final Claims claims = extractAllClaims(token);
-        return claimsResolver.apply(claims);
+    public String extractUsername(String token){
+        return extractClaim(token,Claims::getSubject); //subject -> email
     }
 
+    public <T> T extractClaim(String token, Function<Claims,T> claimsResolver) //pass it a function of type CLAIM, and T-> type you want to return. give it a name-> claimsResolve
+    {
+        final Claims claims = extractAllClaims(token);
+        return claimsResolver.apply(claims); //you get all the claims
+    }
+
+    public Claims extractAllClaims(String token){
+        return Jwts.parser()
+                .verifyWith(getSignInKey())
+                .build()
+                .parseSignedClaims(token)
+                .getPayload();
+
+
+    }
+    //no claims, only subject
+    public String generateToken(UserDetails userDetails){
+        return generateToken(new HashMap<>(),userDetails);
+    }
+
+    //With some clams
+    public String generateToken(
+            Map<String, Object> extractClaims,
+            UserDetails userDetails
+    ){
+        return Jwts
+                .builder()
+                .claims(extractClaims)
+                .subject(userDetails.getUsername())
+                .issuedAt(new Date(System.currentTimeMillis()))
+                .expiration(new Date(System.currentTimeMillis()+7*24*3600))
+			    .signWith(getSignInKey())
+                .compact();
+    }
+    //Literally makes no sense to me, expiration should be enough
     public boolean isTokenValid(String token, UserDetails userDetails){
         final String username = extractUsername(token);
-        return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
-    }
-
-    private boolean isTokenExpired(String token){
-        return extractExpiration(token).before(new Date());
+        return (username.equals(userDetails.getUsername())) && !isTokenExpired(token);
     }
 
     private Date extractExpiration(String token){
         return extractClaim(token,Claims::getExpiration);
     }
 
-    public String extractUsername(String token){
-        return extractClaim(token,Claims::getSubject);
-    }
-
-    public Key getSignInKey(){
-        byte[] key_bytes = Decoders.BASE64.decode(SECRET_KEY);
-        return Keys.hmacShaKeyFor(key_bytes);
-    }
-    //Apprently SecretKey is used for extracting claims now,
-    // Key is depreciated with setSigningkey
-    public SecretKey getSecretKey(){
-        byte[] key_bytes = Decoders.BASE64.decode(SECRET_KEY);
-        return Keys.hmacShaKeyFor(key_bytes);
+    private boolean isTokenExpired(String token){
+        return extractExpiration(token).before(new Date());
     }
 
 
-
-    public Claims extractAllClaims(String token){
-        return (Claims) Jwts
-                .parser()
-                .verifyWith(getSecretKey())
-                .build()
-                .parseSignedClaims(token);
+    public SecretKey getSignInKey(){
+        byte[] keyBytes = Decoders.BASE64.decode(SECRET_KEY);
+        return Keys.hmacShaKeyFor(keyBytes);
     }
-
-    public String generateToken(UserDetails userDetails){
-        return generateToken(new HashMap<>(),userDetails);
-    }
-
-    public String generateToken(Map<String,Object> extractClaims, UserDetails userDetails){
-        return  Jwts.builder()
-                    .claims()
-                    .add(extractClaims)
-                    .subject(userDetails.getUsername())
-                    .issuedAt(new Date(System.currentTimeMillis()))
-                    .expiration(new Date(System.currentTimeMillis()+1000*60+24))
-                    .and()
-                    .signWith(getSignInKey())
-                    .compact();
-    }
-
-
-
-
 }
