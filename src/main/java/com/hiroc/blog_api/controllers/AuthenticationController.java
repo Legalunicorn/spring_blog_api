@@ -35,7 +35,9 @@ public class AuthenticationController {
     public ResponseEntity<AuthenticationResponse> register(
             @RequestBody RegisterRequest request)
     {
-        log.info("Registering from controller" );
-        return ResponseEntity.ok(authenticationService.register(request));
+        log.debug("Registration request: {}",request);
+        AuthenticationResponse response = authenticationService.register((request));
+        log.debug("Registration response: {}",response);
+        return ResponseEntity.ok(response);
     }
 }
