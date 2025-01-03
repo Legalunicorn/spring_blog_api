@@ -42,10 +42,10 @@ public class Post {
 
     private String thumbnail;
 
-    @OneToMany(mappedBy = "post")
+    @OneToMany(mappedBy = "post",cascade = {CascadeType.REMOVE}) //consider orphan removal also
     private Set<Comment> comments;
 
-    @ManyToMany(mappedBy="posts")
+    @ManyToMany(mappedBy="posts",cascade = CascadeType.PERSIST)
     private Set<Tag> tags = new HashSet<>();
 
     @CreationTimestamp

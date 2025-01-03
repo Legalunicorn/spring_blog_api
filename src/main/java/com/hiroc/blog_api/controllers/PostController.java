@@ -2,7 +2,6 @@ package com.hiroc.blog_api.controllers;
 
 
 import com.hiroc.blog_api.dto.post.PostDTO;
-import com.hiroc.blog_api.dto.post.PostResponse;
 import com.hiroc.blog_api.services.PostService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -22,7 +21,6 @@ public class PostController {
     public ResponseEntity<PostDTO> getPost(@PathVariable Integer postId){
         PostDTO response = postService.getPostById(postId);
         return ResponseEntity.ok(response);
-
     }
 
 }
