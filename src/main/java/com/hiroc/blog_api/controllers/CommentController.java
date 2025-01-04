@@ -31,7 +31,6 @@ public class CommentController {
         Comment comment = commentService.createComment(request,author);
         CommentDTO response = commentMapper.map(comment);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
-
     }
 
 }

@@ -62,8 +62,7 @@ public class PostMapper {
                 .author(userMapper.toSummary(post.getAuthor()))
                 .build();
 
-        if (post.getTags()!=null){
-        }
+        return postSummary;
     }
 
 
