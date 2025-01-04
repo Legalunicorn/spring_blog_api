@@ -2,7 +2,10 @@ package com.hiroc.blog_api.mappers;
 
 import com.hiroc.blog_api.domain.Tag;
 import com.hiroc.blog_api.dto.tag.TagSummaryDTO;
+import org.springframework.stereotype.Component;
 
+
+@Component
 public class TagMapper {
 
     public TagSummaryDTO toSummary(Tag tag){

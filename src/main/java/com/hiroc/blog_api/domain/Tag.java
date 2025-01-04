@@ -15,6 +15,7 @@ import java.util.Set;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@Entity
 public class Tag {
 
     @Id
@@ -25,7 +26,7 @@ public class Tag {
     @NotNull
     private String name;
 
-    @ManyToMany
+    @ManyToMany(cascade = CascadeType.PERSIST)
     @JoinTable(
             name = "TAG_POST",
             joinColumns = @JoinColumn(name ="TAG_ID"),

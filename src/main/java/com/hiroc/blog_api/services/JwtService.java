@@ -15,6 +15,7 @@ import javax.crypto.SecretKey;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 import java.util.function.Function;
 
 @Service
@@ -23,6 +24,7 @@ public class JwtService {
     @Value("${security.secret}")
     private String SECRET_KEY;
     private static final Logger log = LoggerFactory.getLogger(JwtService.class);
+    private static final long JWT_EXPIRATION = 7 * 24 * 60 * 60 * 1000;
 
     public String extractUsername(String token){
 
@@ -36,11 +38,14 @@ public class JwtService {
     }
 
     public Claims extractAllClaims(String token){
-        return Jwts.parser()
+        Claims claims = Jwts.parser()
                 .verifyWith(getSignInKey())
                 .build()
                 .parseSignedClaims(token)
                 .getPayload();
+
+        log.debug("Claims:  {}",claims);
+        return claims;
 
 
     }
@@ -54,12 +59,14 @@ public class JwtService {
             Map<String, Object> extractClaims,
             UserDetails userDetails
     ){
+        //Random Identifier
+        extractClaims.put("jit", UUID.randomUUID().toString());
         String token = Jwts
                 .builder()
                 .claims(extractClaims)
                 .subject(userDetails.getUsername())
                 .issuedAt(new Date(System.currentTimeMillis()))
-                .expiration(new Date(System.currentTimeMillis()+7*24*3600))
+                .expiration(new Date(System.currentTimeMillis()+JWT_EXPIRATION))
 			    .signWith(getSignInKey())
                 .compact();
         log.debug("The generated JWT is {}",token);

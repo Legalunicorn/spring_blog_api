@@ -17,6 +17,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -39,17 +41,30 @@ public class PostService {
     }
 
     @Transactional
-    public void createPost(PostRequestDTO postRequest, String username){
+    public Post createPost(PostRequestDTO postRequest, String username){
         //Get the user from the username
         User user = userRepository.findByUsername(username)
                 .orElseThrow(()-> new UsernameNotFoundException("Username not found:"+username));
 
-        //Get a set from the request
-        //Optimise next time, this is doing n queries
-        Set<Tag> tags = postRequest.getTags().stream()
-                .map(name->tagRepository.findByName(name)
-                        .orElseGet(()-> Tag.builder().name(name).build()
-                )).collect(Collectors.toSet());
+
+        Set<Tag> tags = new HashSet<>();
+//        if (postRequest.getTags()!=null && postRequest.getTags) {
+
+            //Get a set from the request
+            //Optimise next time, this is doing n queries
+        //        Set<Tag> tags = postRequest.getTags().stream()
+        //                .map(name->tagRepository.findByName(name)
+        //                        .orElseGet(()-> Tag.builder().name(name).build()
+        //                )).collect(Collectors.toSet());
+
+            //Optimised approach to avoid n+1 queries
+            Set<Tag> existingTags = tagRepository.findAllByNameIn(postRequest.getTags());
+            Map<String, Tag> exitstingTagsMap = existingTags.stream().collect(Collectors.toMap(Tag::getName, t -> t));
+            tags = postRequest.getTags().stream()
+                    .map(name -> exitstingTagsMap.getOrDefault(name, Tag.builder().name(name).build()))
+                    .collect(Collectors.toSet());
+
+//        }
 
         //Create the Post Entity
         Post newPost = Post.builder()
@@ -60,7 +75,7 @@ public class PostService {
                 .tags(tags)
                 .build();
 
-        postRepository.save(newPost);
+        return postRepository.save(newPost);
     }
 
 

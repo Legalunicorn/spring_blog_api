@@ -33,9 +33,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
 
         final String jwt = authHeader.substring(7);
+        log.info("Extract request JWT: {}",jwt);
         String username = null;
         try{
             username = jwtService.extractUsername(jwt);
+            log.debug("extracted username: {}",username);
         } catch(Exception e){
             log.warn("JWT Token has expired or is invalid {} ",e.getMessage());
         }
