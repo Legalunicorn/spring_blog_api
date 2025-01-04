@@ -4,10 +4,7 @@ package com.hiroc.blog_api.domain;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -16,7 +13,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Builder
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
@@ -45,7 +43,13 @@ public class Post {
     @OneToMany(mappedBy = "post",cascade = {CascadeType.REMOVE}) //consider orphan removal also
     private Set<Comment> comments;
 
-    @ManyToMany(mappedBy="posts",cascade = CascadeType.PERSIST)
+//    @ManyToMany(mappedBy="posts",cascade = CascadeType.PERSIST)
+    @ManyToMany(cascade = {CascadeType.MERGE, CascadeType.PERSIST})
+    @JoinTable(
+            name = "TAG_POST",
+            joinColumns = @JoinColumn(name ="POST_ID"),
+            inverseJoinColumns =  @JoinColumn(name = "TAG_ID")
+    )
     private Set<Tag> tags = new HashSet<>();
 
     @CreationTimestamp
@@ -53,6 +57,12 @@ public class Post {
 
     @UpdateTimestamp
     private LocalDateTime updatedOn;
+
+    //Helper functions
+    public void addTag(Tag tag){
+        tags.add(tag);
+        tag.getPosts().add(this);
+    }
 
 
 

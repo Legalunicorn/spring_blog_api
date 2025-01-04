@@ -5,7 +5,9 @@ import com.hiroc.blog_api.domain.Post;
 import com.hiroc.blog_api.dto.comment.CommentDTO;
 import com.hiroc.blog_api.dto.post.PostDTO;
 import com.hiroc.blog_api.dto.tag.TagSummaryDTO;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.util.HashSet;
@@ -13,13 +15,16 @@ import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class PostMapper {
 
     private final UserMapper userMapper;
     private final TagMapper tagMapper;
     private final CommentMapper commentMapper;
 
+    @Transactional
     public PostDTO map(Post post){
+
 
         PostDTO postDTO =  PostDTO.builder()
                 .id(post.getId())
@@ -28,13 +33,14 @@ public class PostMapper {
                 .createdOn(post.getCreatedOn())
                 .updatedOn(post.getUpdatedOn())
                 .author(userMapper.toSummary(post.getAuthor()))
-//                .tags(post.getTags().stream().map(tagMapper::toSummary).collect(Collectors.toSet()))
-//                .comments(post.getComments().stream().map(commentMapper::map).collect(Collectors.toSet()))
+                .thumbnail(post.getThumbnail())
                 .build();
 
         if (post.getTags()!=null){
+            log.debug("Mapping {} tags for the post: ",post.getTags().size());
             postDTO.setTags(post.getTags().stream().map(tagMapper::toSummary).collect(Collectors.toSet()));
         }else{
+            log.debug("No tags found for the post");
             postDTO.setTags(new HashSet<TagSummaryDTO>());
         }
         if (post.getComments()!=null){

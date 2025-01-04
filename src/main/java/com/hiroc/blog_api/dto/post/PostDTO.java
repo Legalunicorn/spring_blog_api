@@ -22,7 +22,7 @@ public class PostDTO {
     private String body;
     private LocalDateTime createdOn;
     private LocalDateTime updatedOn;
-
+    private String thumbnail;
     //entity references
     private UserSummaryDTO author; //UserDTO -> PostDTO -> UserSummaryDTO
     private Set<TagSummaryDTO> tags;

@@ -17,7 +17,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -34,8 +33,13 @@ public class PostService {
     private final PostMapper postMapper;
 
     public PostDTO getPostById(Integer id){
+        log.info("fetching post with id: {}",id);
         Post post = postRepository.getPostById(id)
                 .orElseThrow(()-> new ResourceNotFoundException("Post not found with id: "+id));
+
+        post.getTags().forEach(tag->log.info("tag fetch along with post: {}",tag));
+
+        log.info("The retrieved title: {}  and tags size: {}",post.getTitle(),post.getTags().size());
 
         return postMapper.map(post);
     }
@@ -47,24 +51,13 @@ public class PostService {
                 .orElseThrow(()-> new UsernameNotFoundException("Username not found:"+username));
 
 
-        Set<Tag> tags = new HashSet<>();
-//        if (postRequest.getTags()!=null && postRequest.getTags) {
-
-            //Get a set from the request
-            //Optimise next time, this is doing n queries
-        //        Set<Tag> tags = postRequest.getTags().stream()
-        //                .map(name->tagRepository.findByName(name)
-        //                        .orElseGet(()-> Tag.builder().name(name).build()
-        //                )).collect(Collectors.toSet());
-
-            //Optimised approach to avoid n+1 queries
-            Set<Tag> existingTags = tagRepository.findAllByNameIn(postRequest.getTags());
-            Map<String, Tag> exitstingTagsMap = existingTags.stream().collect(Collectors.toMap(Tag::getName, t -> t));
-            tags = postRequest.getTags().stream()
-                    .map(name -> exitstingTagsMap.getOrDefault(name, Tag.builder().name(name).build()))
-                    .collect(Collectors.toSet());
-
-//        }
+        //Optimised approach to avoid n+1 queries
+        Set<Tag> existingTags = tagRepository.findAllByNameIn(postRequest.getTags());
+        //Map name to Tag
+        Map<String, Tag> exitstingTagsMap = existingTags.stream().collect(Collectors.toMap(Tag::getName, t -> t));
+        Set<Tag> tags = postRequest.getTags().stream()
+                .map(name -> exitstingTagsMap.getOrDefault(name, Tag.builder().name(name).build()))
+                .collect(Collectors.toSet());
 
         //Create the Post Entity
         Post newPost = Post.builder()
@@ -74,6 +67,9 @@ public class PostService {
                 .thumbnail(postRequest.getThumbnail())
                 .tags(tags)
                 .build();
+
+        //Tag is the owning side
+        //Call helper function to establish relationship
 
         return postRepository.save(newPost);
     }
