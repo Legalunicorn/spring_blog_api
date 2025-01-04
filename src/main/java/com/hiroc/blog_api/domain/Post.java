@@ -40,6 +40,8 @@ public class Post {
 
     private String thumbnail;
 
+    private boolean draft;
+
     @OneToMany(mappedBy = "post",cascade = {CascadeType.REMOVE}) //consider orphan removal also
     private Set<Comment> comments;
 

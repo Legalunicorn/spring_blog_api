@@ -38,7 +38,6 @@ public class PostService {
                 .orElseThrow(()-> new ResourceNotFoundException("Post not found with id: "+id));
 
         post.getTags().forEach(tag->log.info("tag fetch along with post: {}",tag));
-
         log.info("The retrieved title: {}  and tags size: {}",post.getTitle(),post.getTags().size());
 
         return postMapper.map(post);
@@ -67,9 +66,6 @@ public class PostService {
                 .thumbnail(postRequest.getThumbnail())
                 .tags(tags)
                 .build();
-
-        //Tag is the owning side
-        //Call helper function to establish relationship
 
         return postRepository.save(newPost);
     }

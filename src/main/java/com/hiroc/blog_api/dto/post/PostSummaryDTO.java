@@ -1,7 +1,7 @@
 package com.hiroc.blog_api.dto.post;
 
 
-import com.hiroc.blog_api.domain.User;
+import com.hiroc.blog_api.dto.User.UserSummaryDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -17,9 +17,12 @@ public class PostSummaryDTO {
     private Integer id;
     private String title;
     private String body;
-    private User author;
-//    private Set<Tag> tags;
-//    private Set<Comment> comments;
+    private boolean draft;
+    private UserSummaryDTO author;
+    //missing tags and comments?..
+
+
+
     private LocalDateTime createdOn;
     private LocalDateTime updatedOn;
 }

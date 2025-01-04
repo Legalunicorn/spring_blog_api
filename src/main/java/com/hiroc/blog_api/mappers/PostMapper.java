@@ -4,8 +4,8 @@ package com.hiroc.blog_api.mappers;
 import com.hiroc.blog_api.domain.Post;
 import com.hiroc.blog_api.dto.comment.CommentDTO;
 import com.hiroc.blog_api.dto.post.PostDTO;
+import com.hiroc.blog_api.dto.post.PostSummaryDTO;
 import com.hiroc.blog_api.dto.tag.TagSummaryDTO;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -22,7 +22,6 @@ public class PostMapper {
     private final TagMapper tagMapper;
     private final CommentMapper commentMapper;
 
-    @Transactional
     public PostDTO map(Post post){
 
 
@@ -34,6 +33,7 @@ public class PostMapper {
                 .updatedOn(post.getUpdatedOn())
                 .author(userMapper.toSummary(post.getAuthor()))
                 .thumbnail(post.getThumbnail())
+
                 .build();
 
         if (post.getTags()!=null){
@@ -49,6 +49,21 @@ public class PostMapper {
             postDTO.setComments(new HashSet<CommentDTO>());
         }
         return postDTO;
+    }
+
+    public PostSummaryDTO toSummary(Post post){
+        PostSummaryDTO postSummary = PostSummaryDTO.builder()
+                .id(post.getId())
+                .title(post.getTitle())
+                .body(post.getBody())
+                .draft(post.isDraft())
+                .createdOn(post.getCreatedOn())
+                .updatedOn(post.getUpdatedOn())
+                .author(userMapper.toSummary(post.getAuthor()))
+                .build();
+
+        if (post.getTags()!=null){
+        }
     }
 
 

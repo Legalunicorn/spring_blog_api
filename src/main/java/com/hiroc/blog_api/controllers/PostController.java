@@ -6,6 +6,7 @@ import com.hiroc.blog_api.dto.post.PostDTO;
 import com.hiroc.blog_api.dto.post.PostRequestDTO;
 import com.hiroc.blog_api.mappers.PostMapper;
 import com.hiroc.blog_api.services.PostService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.ArrayList;
 
 @RestController
-@RequestMapping("/api/post")
+@RequestMapping("/api/posts")
 @RequiredArgsConstructor
 public class PostController {
 
@@ -30,7 +31,7 @@ public class PostController {
 
     @PostMapping
     public ResponseEntity<PostDTO> createPost(
-            @RequestBody PostRequestDTO request){
+            @Valid @RequestBody PostRequestDTO request){
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         if (request.getTags()==null){
             request.setTags(new ArrayList<String>());

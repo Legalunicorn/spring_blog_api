@@ -23,6 +23,7 @@ public class PostRequestDTO {
     private String body;
     private String thumbnail;
     private List<String> tags;
+    private boolean draft;
 
     /*
     the user is not needed?

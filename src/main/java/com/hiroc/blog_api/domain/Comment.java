@@ -23,13 +23,15 @@ public class Comment {
     private Integer id;
 
     @NotNull
-    @Size(max = 300)
+    @Size(max = 500)
     private String body;
 
     @ManyToOne
+    @NotNull
     private User author;
 
     @ManyToOne
+    @NotNull
     private Post post;
 
     @CreationTimestamp

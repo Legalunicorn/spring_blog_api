@@ -11,12 +11,15 @@ import org.springframework.stereotype.Component;
 public class CommentMapper {
 
     private final UserMapper userMapper;
+    private final PostMapper postMapper;
 
     public CommentDTO map(Comment comment){
         return CommentDTO.builder()
                 .id(comment.getId())
                 .body(comment.getBody())
+                .post()
                 .author(userMapper.toSummary(comment.getAuthor()))
+                .createdOn(comment.getCreatedOn())
                 .build();
     }
 
