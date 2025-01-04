@@ -1,6 +1,7 @@
 package com.hiroc.blog_api.dto.comment;
 
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
@@ -19,6 +20,7 @@ public class CommentRequestDTO {
     private String body;
 
     @NotNull
+    @JsonProperty("post_id")
     private Integer postId;
 }
 

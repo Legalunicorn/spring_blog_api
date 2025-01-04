@@ -26,7 +26,7 @@ public class CommentController {
 
     @PostMapping
     public ResponseEntity<CommentDTO> createComment(@Valid @RequestBody CommentRequestDTO request){
-        User author = (User) SecurityContextHolder.getContext().getAuthentication();
+        User author = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
         Comment comment = commentService.createComment(request,author);
         CommentDTO response = commentMapper.map(comment);
