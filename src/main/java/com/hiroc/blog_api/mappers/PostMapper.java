@@ -32,6 +32,7 @@ public class PostMapper {
                 .createdOn(post.getCreatedOn())
                 .updatedOn(post.getUpdatedOn())
                 .author(userMapper.toSummary(post.getAuthor()))
+                .draft(post.isDraft())
                 .thumbnail(post.getThumbnail())
 
                 .build();

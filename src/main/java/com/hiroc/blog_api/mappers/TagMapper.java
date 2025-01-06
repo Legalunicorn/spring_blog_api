@@ -16,6 +16,10 @@ public class TagMapper {
                 .build();
     }
 
+//    public TagDTO map(Tag tag){
+//
+//    }
+
 //    public Set<TagSummaryDTO> toSummaryList(List<Tag> tags){
 //        return tags.stream().map(this::toSummary).collect(Collectors.toSet());
 //    }

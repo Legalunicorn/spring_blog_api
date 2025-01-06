@@ -33,14 +33,48 @@ public class PostService {
     private final PostMapper postMapper;
 
     public PostDTO getPostById(Integer id){
-        log.info("fetching post with id: {}",id);
+        log.debug("fetching post with id: {}",id);
         Post post = postRepository.getPostById(id)
                 .orElseThrow(()-> new ResourceNotFoundException("Post not found with id: "+id));
 
         post.getTags().forEach(tag->log.info("tag fetch along with post: {}",tag));
-        log.info("The retrieved title: {}  and tags size: {}",post.getTitle(),post.getTags().size());
+        log.debug("The retrieved title: {}  and tags size: {}",post.getTitle(),post.getTags().size());
 
         return postMapper.map(post);
+    }
+
+    public Set<Post> findPublishesPostsByAuthorUsername(String username){
+        //check the author is a valid person
+        userRepository.findByUsername(username)
+                .orElseThrow(()-> new UsernameNotFoundException("user not found: "+username));
+
+        //get all the post
+        Set<Post> posts = postRepository.findPublishedPostsByAuthorUsername(username);
+        return posts;
+    }
+
+    public Set<Post> findPublishedPosts(){
+        Set<Post> published_posts = postRepository.getPostByDraftFalse();
+        log.debug("{} published posts fetched",published_posts.size());
+        return published_posts;
+//        return published_posts.stream().map(postMapper::toSummary).collect(Collectors.toSet());
+    }
+
+    public Set<Post> findDraftedPostByUser(String username){
+        //First check the user exists
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(()->new UsernameNotFoundException("No such user: "+username));
+
+        Set<Post> posts = postRepository.findPostsByDraftTrueAndUsernameEquals(username);
+        log.debug("Drafted post by user: {} size of {}",username,posts.size());
+        return posts;
+
+    }
+
+    public Tag findPostsByTag(String tag_name){
+        Tag tag = tagRepository.findTagWithPosts(tag_name);
+        log.debug("tag null: {}",tag==null);
+        return tag;
     }
 
     @Transactional
@@ -65,9 +99,15 @@ public class PostService {
                 .author(user)
                 .thumbnail(postRequest.getThumbnail())
                 .tags(tags)
+                .draft(postRequest.isDraft())
                 .build();
 
         return postRepository.save(newPost);
+    }
+
+    public void deletePostById(Integer id){
+        //PreAuthorize has already checked that the post exists
+        postRepository.deleteById(id);
     }
 
 
