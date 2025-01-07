@@ -61,6 +61,7 @@ public class PostMapper {
                 .createdOn(post.getCreatedOn())
                 .updatedOn(post.getUpdatedOn())
                 .author(userMapper.toSummary(post.getAuthor()))
+                .tags(post.getTags().stream().map(tagMapper::toSummary).collect(Collectors.toSet()))
                 .build();
 
         return postSummary;

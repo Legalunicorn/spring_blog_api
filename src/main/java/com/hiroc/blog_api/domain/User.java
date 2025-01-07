@@ -41,6 +41,9 @@ public class User implements UserDetails {
     @OneToMany(mappedBy="author")
     private Set<Post> createdPosts = new HashSet<>();
 
+    @ManyToMany(mappedBy="likedByUsers")
+    private Set<Post> likedPosts = new HashSet<>();
+
 
 
 
