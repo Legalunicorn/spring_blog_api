@@ -22,7 +22,7 @@ public class PostMapper {
     private final TagMapper tagMapper;
     private final CommentMapper commentMapper;
 
-    public PostDTO map(Post post){
+    public  PostDTO map(Post post){
 
 
         PostDTO postDTO =  PostDTO.builder()
@@ -52,7 +52,7 @@ public class PostMapper {
         return postDTO;
     }
 
-    public PostSummaryDTO toSummary(Post post){
+    public  PostSummaryDTO toSummary(Post post){
         PostSummaryDTO postSummary = PostSummaryDTO.builder()
                 .id(post.getId())
                 .title(post.getTitle())

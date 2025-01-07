@@ -35,5 +35,11 @@ public class CommentService {
         return commentRepository.save(comment);
     }
 
+    public void deleteComment(Integer commentId){
+        //@PreAuthorize has confirmed that the post exists
+        commentRepository.deleteById(commentId);
+
+    }
+
 
 }

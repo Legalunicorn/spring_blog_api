@@ -33,8 +33,8 @@ public class PostController {
 
     @GetMapping("/{postId}")
     public ResponseEntity<PostDTO> getPost(@PathVariable Integer postId){
-        PostDTO response = postService.getPostById(postId);
-        return ResponseEntity.ok(response);
+        Post post = postService.getPostById(postId);
+        return ResponseEntity.ok(postMapper.map(post));
     }
 
     //tested with post man
@@ -53,7 +53,6 @@ public class PostController {
     }
 
 
-
     //TESTED
     @PostMapping
     public ResponseEntity<PostDTO> createPost(
@@ -64,7 +63,7 @@ public class PostController {
             request.setTags(new ArrayList<String>());
         }
         Post post = postService.createPost(request,username);
-        PostDTO response = postMapper.map(post);
+        PostDTO response =  postMapper.map(post);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 

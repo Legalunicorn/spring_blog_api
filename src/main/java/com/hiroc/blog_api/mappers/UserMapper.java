@@ -21,7 +21,7 @@ public class UserMapper {
 //                .build()
 //    }
 
-    public UserSummaryDTO toSummary(User user){
+    public  UserSummaryDTO toSummary(User user){
         return UserSummaryDTO.builder()
                 .id(user.getId())
                 .username(user.getUsername())

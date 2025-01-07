@@ -11,9 +11,9 @@ import org.springframework.stereotype.Component;
 public class CommentMapper {
 
     private final UserMapper userMapper;
-//    private final PostMapper postMapper;
+// CD    private final PostMapper postMapper;
 
-    public CommentDTO map(Comment comment){
+    public  CommentDTO map(Comment comment){
         return CommentDTO.builder()
                 .id(comment.getId())
                 .body(comment.getBody())
@@ -24,7 +24,7 @@ public class CommentMapper {
     }
 
     //Not needed
-    public CommentSummaryDTO toSummary(Comment comment){
+    public  CommentSummaryDTO toSummary(Comment comment){
         return CommentSummaryDTO.builder()
                 .id(comment.getId())
                 .body(comment.getBody())

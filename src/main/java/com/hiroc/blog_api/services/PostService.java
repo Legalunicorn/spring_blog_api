@@ -4,10 +4,8 @@ package com.hiroc.blog_api.services;
 import com.hiroc.blog_api.domain.Post;
 import com.hiroc.blog_api.domain.Tag;
 import com.hiroc.blog_api.domain.User;
-import com.hiroc.blog_api.dto.post.PostDTO;
 import com.hiroc.blog_api.dto.post.PostRequestDTO;
 import com.hiroc.blog_api.exceptions.ResourceNotFoundException;
-import com.hiroc.blog_api.mappers.PostMapper;
 import com.hiroc.blog_api.repositories.PostRepository;
 import com.hiroc.blog_api.repositories.TagRepository;
 import com.hiroc.blog_api.repositories.UserRepository;
@@ -30,17 +28,16 @@ public class PostService {
     private final PostRepository postRepository;
     private final UserRepository userRepository;
     private final TagRepository tagRepository;
-    private final PostMapper postMapper;
 
-    public PostDTO getPostById(Integer id){
+    public Post getPostById(Integer id){
         log.debug("fetching post with id: {}",id);
         Post post = postRepository.getPostById(id)
                 .orElseThrow(()-> new ResourceNotFoundException("Post not found with id: "+id));
 
-        post.getTags().forEach(tag->log.info("tag fetch along with post: {}",tag));
-        log.debug("The retrieved title: {}  and tags size: {}",post.getTitle(),post.getTags().size());
+//        post.getTags().forEach(tag->log.info("tag fetch along with post: {}",tag));
+//        log.debug("The retrieved title: {}  and tags size: {}",post.getTitle(),post.getTags().size());
 
-        return postMapper.map(post);
+        return post;
     }
 
     public Set<Post> findPublishesPostsByAuthorUsername(String username){
@@ -57,7 +54,6 @@ public class PostService {
         Set<Post> published_posts = postRepository.getPostByDraftFalse();
         log.debug("{} published posts fetched",published_posts.size());
         return published_posts;
-//        return published_posts.stream().map(postMapper::toSummary).collect(Collectors.toSet());
     }
 
     public Set<Post> findDraftedPostByUser(String username){

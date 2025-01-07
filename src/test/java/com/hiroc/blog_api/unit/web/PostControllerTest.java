@@ -11,6 +11,7 @@ import com.hiroc.blog_api.services.PostService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.MockedStatic;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -43,6 +44,7 @@ public class PostControllerTest {
     private JwtService jwtService; //Not sure why this is needed even after disabled addFilters, but it is
 
     private PostRequestDTO default_request;
+    private MockedStatic<PostMapper> mockedPostMapper;
 
     @BeforeEach
     public void setUp(){
@@ -57,8 +59,18 @@ public class PostControllerTest {
         Post response = new Post();
         PostDTO default_response = new PostDTO();
         given(postService.createPost((any(PostRequestDTO.class)),any(String.class))).willReturn(response);
-        given(postMapper.map(any(Post.class))).willReturn(default_response);
+        given(postMapper.map(any(Post.class))).willReturn(default_response); //no longer works, changed from component to static methods
+//        mockedPostMapper = mockStatic(PostMapper.class);
+//        mockedPostMapper.when(()-> PostMapper.map(any(Post.class)))
+//                .thenReturn(default_response);
+
     }
+
+//    @AfterEach
+//    void tearDown(){
+//        //prevent memeory leak by closing the static mock
+//        if (mockedPostMapper!=null) mockedPostMapper.close();
+//    }
 
     @Test
     @DisplayName("TEST: No errors with valid default request - HTTP 201")
