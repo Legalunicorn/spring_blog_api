@@ -6,6 +6,7 @@ import com.hiroc.blog_api.domain.Post;
 import com.hiroc.blog_api.dto.post.PostDTO;
 import com.hiroc.blog_api.dto.post.PostRequestDTO;
 import com.hiroc.blog_api.mappers.PostMapper;
+import com.hiroc.blog_api.repositories.LikePostRepository;
 import com.hiroc.blog_api.services.JwtService;
 import com.hiroc.blog_api.services.PostService;
 import org.junit.jupiter.api.BeforeEach;
@@ -33,6 +34,9 @@ public class PostControllerTest {
 
     @Autowired
     MockMvc mockMvc;
+
+    @MockitoBean
+    private LikePostRepository likePostRepository;
 
     @MockitoBean
     private PostService postService;

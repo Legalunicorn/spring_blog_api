@@ -2,6 +2,7 @@ package com.hiroc.blog_api.controllers;
 
 
 import com.hiroc.blog_api.domain.Post;
+import com.hiroc.blog_api.domain.User;
 import com.hiroc.blog_api.dto.post.PostDTO;
 import com.hiroc.blog_api.dto.post.PostRequestDTO;
 import com.hiroc.blog_api.dto.post.PostSummaryDTO;
@@ -65,6 +66,21 @@ public class PostController {
         Post post = postService.createPost(request,username);
         PostDTO response =  postMapper.map(post);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+
+    @PutMapping("/{postId}/like")
+    public ResponseEntity<Void> likePost(@PathVariable Integer postId){
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        postService.likePost(postId,user);
+        return ResponseEntity.noContent().build();
+
+    }
+
+    @DeleteMapping("/{postId}/like")
+    public ResponseEntity<Void> unlikePost(@PathVariable Integer postId){
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        postService.unlikePost(postId,user);
+        return ResponseEntity.noContent().build();
     }
 
     // Self Authentications or Admin, tested with postman

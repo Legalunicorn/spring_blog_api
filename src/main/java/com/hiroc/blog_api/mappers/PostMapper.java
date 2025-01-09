@@ -34,8 +34,13 @@ public class PostMapper {
                 .author(userMapper.toSummary(post.getAuthor()))
                 .draft(post.isDraft())
                 .thumbnail(post.getThumbnail())
-
                 .build();
+
+        if (post.getLikes()==null){
+            postDTO.setLike_count(0);
+        } else{
+            postDTO.setLike_count(post.getLikes().size());
+        }
 
         if (post.getTags()!=null){
             log.debug("Mapping {} tags for the post: ",post.getTags().size());
@@ -62,6 +67,7 @@ public class PostMapper {
                 .updatedOn(post.getUpdatedOn())
                 .author(userMapper.toSummary(post.getAuthor()))
                 .tags(post.getTags().stream().map(tagMapper::toSummary).collect(Collectors.toSet()))
+                .like_count(post.getLikes().size())
                 .build();
 
         return postSummary;

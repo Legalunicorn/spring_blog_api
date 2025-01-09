@@ -45,13 +45,9 @@ public class Post {
     @OneToMany(mappedBy = "post",cascade = {CascadeType.REMOVE}) //consider orphan removal also
     private Set<Comment> comments;
 
-    @ManyToMany(cascade={CascadeType.PERSIST,CascadeType.MERGE})
-    @JoinTable(
-            name = "POST_LIKE",
-            joinColumns = @JoinColumn(name="POST_ID"),
-            inverseJoinColumns = @JoinColumn(name="USER_ID")
-    )
-    private Set<User> likedByUsers = new HashSet<>();
+
+    @OneToMany(mappedBy="post", cascade = CascadeType.ALL,orphanRemoval = true)
+    private Set<LikePost> likes = new HashSet<>();
 
 //    @ManyToMany(mappedBy="posts",cascade = CascadeType.PERSIST)
     @ManyToMany(cascade = {CascadeType.MERGE, CascadeType.PERSIST})

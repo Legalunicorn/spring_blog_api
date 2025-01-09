@@ -1,11 +1,14 @@
 package com.hiroc.blog_api.services;
 
 
+import com.hiroc.blog_api.domain.LikePost;
 import com.hiroc.blog_api.domain.Post;
 import com.hiroc.blog_api.domain.Tag;
 import com.hiroc.blog_api.domain.User;
 import com.hiroc.blog_api.dto.post.PostRequestDTO;
+import com.hiroc.blog_api.exceptions.PostNotFoundException;
 import com.hiroc.blog_api.exceptions.ResourceNotFoundException;
+import com.hiroc.blog_api.repositories.LikePostRepository;
 import com.hiroc.blog_api.repositories.PostRepository;
 import com.hiroc.blog_api.repositories.TagRepository;
 import com.hiroc.blog_api.repositories.UserRepository;
@@ -28,6 +31,7 @@ public class PostService {
     private final PostRepository postRepository;
     private final UserRepository userRepository;
     private final TagRepository tagRepository;
+    private final LikePostRepository likePostRepository;
 
     public Post getPostById(Integer id){
         log.debug("fetching post with id: {}",id);
@@ -101,11 +105,37 @@ public class PostService {
         return postRepository.save(newPost);
     }
 
+    @Transactional
     public void deletePostById(Integer id){
         //PreAuthorize has already checked that the post exists
         postRepository.deleteById(id);
     }
 
+    @Transactional
+    public void likePost(Integer postId,User user){
+        //Check if user has already liked post s
+        if (likePostRepository.existsByPostIdAndUserId(postId,user.getId())){
+            return; //Don't do anything
+        }
+
+        //Check if the post exists
+        Post post = postRepository.findById(postId)
+                .orElseThrow(()-> new PostNotFoundException(postId));
+        LikePost like = LikePost.builder()
+                .post(post)
+                .user(user)
+                .build();
+
+        likePostRepository.save(like);
+
+    }
+
+    @Transactional
+    public void unlikePost(Integer postId,User user){
+        likePostRepository.deleteByPostIdAndUserId(postId,user.getId());
+    }
+
 
 
 }
+`

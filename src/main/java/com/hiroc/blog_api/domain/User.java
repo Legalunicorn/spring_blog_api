@@ -41,10 +41,12 @@ public class User implements UserDetails {
     @OneToMany(mappedBy="author")
     private Set<Post> createdPosts = new HashSet<>();
 
-    @ManyToMany(mappedBy="likedByUsers")
-    private Set<Post> likedPosts = new HashSet<>();
+//    @ManyToMany(mappedBy="likedByUsers")
+//    private Set<Post> likedPosts = new HashSet<>();
+//
 
-
+    @OneToMany(mappedBy="user",cascade = CascadeType.ALL,orphanRemoval = true)
+    private Set<LikePost> likedPosts = new HashSet<>();
 
 
     public Collection<? extends GrantedAuthority> getAuthorities() {

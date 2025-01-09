@@ -24,6 +24,7 @@ public class PostSummaryDTO {
     //missing tags and comments?..
     //NEW: tags Summary
     private Set<TagSummaryDTO> tags;
+    private int like_count;
 
 
 

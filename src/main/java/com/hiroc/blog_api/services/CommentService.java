@@ -30,8 +30,7 @@ public class CommentService {
                 .post(post)
                 .build();
 
-        //
-
+        //comment is the owning side?
         return commentRepository.save(comment);
     }
 

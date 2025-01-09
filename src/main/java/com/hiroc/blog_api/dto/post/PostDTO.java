@@ -28,6 +28,7 @@ public class PostDTO {
     private UserSummaryDTO author; //UserDTO -> PostDTO -> UserSummaryDTO
     private Set<TagSummaryDTO> tags;
     private Set<CommentDTO> comments;
+    private int like_count;
 
 
 
