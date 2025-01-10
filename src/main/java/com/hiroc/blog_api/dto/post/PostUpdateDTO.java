@@ -1,7 +1,5 @@
 package com.hiroc.blog_api.dto.post;
 
-
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -12,22 +10,16 @@ import java.util.List;
 
 @Data
 @Builder
-@AllArgsConstructor
 @NoArgsConstructor
-public class PostRequestDTO {
-
-    @NotNull
-    @Size(max=300)
+@AllArgsConstructor
+public class PostUpdateDTO {
+    @Size(min=1,max=300)
     private String title;
-    @NotNull
+
+    @Size(min=1,max=50000)
     private String body;
-    private String thumbnail;
-    private List<String> tags;
-    @NotNull
+    private String thumbnail; //Can be null
     private Boolean draft;
 
-    /*
-    the user is not needed?
-    the entity would get the user from the Security Context
-     */
+    private List<String> tags;
 }

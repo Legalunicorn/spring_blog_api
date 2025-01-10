@@ -6,6 +6,7 @@ import com.hiroc.blog_api.domain.User;
 import com.hiroc.blog_api.dto.post.PostDTO;
 import com.hiroc.blog_api.dto.post.PostRequestDTO;
 import com.hiroc.blog_api.dto.post.PostSummaryDTO;
+import com.hiroc.blog_api.dto.post.PostUpdateDTO;
 import com.hiroc.blog_api.mappers.PostMapper;
 import com.hiroc.blog_api.services.PostService;
 import jakarta.validation.Valid;
@@ -59,7 +60,7 @@ public class PostController {
     public ResponseEntity<PostDTO> createPost(
             @Valid @RequestBody PostRequestDTO request){
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        log.debug("Draft status: {}",request.isDraft());
+        log.debug("Draft status: {}",request.getDraft());
         if (request.getTags()==null){
             request.setTags(new ArrayList<String>());
         }
@@ -67,6 +68,8 @@ public class PostController {
         PostDTO response =  postMapper.map(post);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
+
+
 
     @PutMapping("/{postId}/like")
     public ResponseEntity<Void> likePost(@PathVariable Integer postId){
@@ -92,6 +95,14 @@ public class PostController {
         return ResponseEntity.ok(posts_dto);
     }
 
+    @PatchMapping("/{postId}")
+    @PreAuthorize("@auth.isPostOwnerOrAdmin(#postId,#root)")
+    public ResponseEntity<PostDTO> updatePost(@PathVariable Integer postId,@Valid @RequestBody PostUpdateDTO postUpdateDTO){
+        Post post = postService.updatePost(postUpdateDTO,postId);
+        PostDTO post_dto = postMapper.map(post);
+        return ResponseEntity.ok(post_dto);
+    }
+
     @DeleteMapping("/{postId}")
     @PreAuthorize("@auth.isPostOwnerOrAdmin(#postId,#root)") //this also check if the post exists
     public ResponseEntity<Void> deletePostById(@PathVariable Integer postId){
@@ -99,7 +110,6 @@ public class PostController {
         return ResponseEntity.noContent().build();
 
     }
-
 
 
 

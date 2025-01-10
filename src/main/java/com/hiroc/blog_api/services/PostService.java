@@ -6,6 +6,7 @@ import com.hiroc.blog_api.domain.Post;
 import com.hiroc.blog_api.domain.Tag;
 import com.hiroc.blog_api.domain.User;
 import com.hiroc.blog_api.dto.post.PostRequestDTO;
+import com.hiroc.blog_api.dto.post.PostUpdateDTO;
 import com.hiroc.blog_api.exceptions.PostNotFoundException;
 import com.hiroc.blog_api.exceptions.ResourceNotFoundException;
 import com.hiroc.blog_api.repositories.LikePostRepository;
@@ -18,6 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -32,6 +34,7 @@ public class PostService {
     private final UserRepository userRepository;
     private final TagRepository tagRepository;
     private final LikePostRepository likePostRepository;
+//    private final PostUpdateMapper postUpdateMapper;
 
     public Post getPostById(Integer id){
         log.debug("fetching post with id: {}",id);
@@ -77,17 +80,29 @@ public class PostService {
         return tag;
     }
 
+    //Should Honestly be a tag service method at this point
+    private Set<Tag> createPostTags(List<String> request_tags){
+        Set<Tag> existingTags = tagRepository.findAllByNameIn(request_tags);
+        Map<String,Tag> existingTagsMap = existingTags.stream().collect(Collectors.toMap(Tag::getName,t->t));
+        return request_tags.stream()
+                .map(name->existingTagsMap.getOrDefault(name,Tag.builder().name(name).build()))
+                .collect(Collectors.toSet());
+    }
+
     @Transactional
     public Post createPost(PostRequestDTO postRequest, String username){
         //Get the user from the username
+        // WARNING: change this to be a User from context passed by the controller
         User user = userRepository.findByUsername(username)
                 .orElseThrow(()-> new UsernameNotFoundException("Username not found:"+username));
 
 
         //Optimised approach to avoid n+1 queries
         Set<Tag> existingTags = tagRepository.findAllByNameIn(postRequest.getTags());
-        //Map name to Tag
+        //Map existing tags to the entity
         Map<String, Tag> exitstingTagsMap = existingTags.stream().collect(Collectors.toMap(Tag::getName, t -> t));
+
+        //For each tag: either reference existing tag or create a new tag
         Set<Tag> tags = postRequest.getTags().stream()
                 .map(name -> exitstingTagsMap.getOrDefault(name, Tag.builder().name(name).build()))
                 .collect(Collectors.toSet());
@@ -99,10 +114,35 @@ public class PostService {
                 .author(user)
                 .thumbnail(postRequest.getThumbnail())
                 .tags(tags)
-                .draft(postRequest.isDraft())
+                .draft(postRequest.getDraft())
                 .build();
 
         return postRepository.save(newPost);
+    }
+
+    @Transactional
+    //PreAuthorization filter checked the validity of post and authorization
+    //DTO DOES NOT have to be valid, it can all be null
+    public Post updatePost(PostUpdateDTO postRequest, Integer postId){
+        //Fetch the post
+        Post post = postRepository.findById(postId)
+                .orElseThrow(()->new PostNotFoundException(postId));
+
+        //Set the tags logic, similiar to creating post
+        if (postRequest.getTags()!=null){
+            Set<Tag> new_tags = createPostTags(postRequest.getTags());
+            post.setTags(new_tags);
+        }
+        if (postRequest.getTitle()!=null) post.setTitle(postRequest.getTitle());
+        if (postRequest.getBody()!=null) post.setBody(postRequest.getBody());
+        if (postRequest.getThumbnail()!=null) post.setThumbnail(postRequest.getThumbnail());
+        if (postRequest.getDraft()!=null) post.setDraft(postRequest.getDraft());
+
+        //Save
+        postRepository.save(post);
+
+        //Return the post
+        return post;
     }
 
     @Transactional
@@ -138,4 +178,4 @@ public class PostService {
 
 
 }
-`
+
