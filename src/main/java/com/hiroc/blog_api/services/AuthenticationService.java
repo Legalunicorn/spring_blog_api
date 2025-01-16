@@ -9,6 +9,7 @@ import com.hiroc.blog_api.dto.authentication.RegisterRequest;
 import com.hiroc.blog_api.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -24,10 +25,15 @@ public class AuthenticationService {
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
 
+    @Value("${default-profile-picture-url}")
+    private  String defaultProfilePictureUrl;
+
     public final AuthenticationResponse register(RegisterRequest request){
+        //Add a default profile picture
         var user = User.builder()
                 .username(request.getUsername())
                 .password(passwordEncoder.encode(request.getPassword()))
+                .profilePicture(defaultProfilePictureUrl)
                 .role(Role.USER)
                 .build();
 

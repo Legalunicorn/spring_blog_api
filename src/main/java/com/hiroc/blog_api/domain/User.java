@@ -32,6 +32,8 @@ public class User implements UserDetails {
     @NotNull
     private String password; //Hashed
 
+    private String profilePicture;
+
     @Enumerated(EnumType.STRING)
     private Role role;
 

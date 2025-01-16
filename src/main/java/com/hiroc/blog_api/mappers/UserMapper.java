@@ -25,6 +25,7 @@ public class UserMapper {
         return UserSummaryDTO.builder()
                 .id(user.getId())
                 .username(user.getUsername())
+                .profilePicture(user.getProfilePicture())
                 .build();
     }
 

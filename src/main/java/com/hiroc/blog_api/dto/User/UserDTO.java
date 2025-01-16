@@ -19,6 +19,7 @@ public class UserDTO {
     private String username;
     private Set<CommentDTO> comments;
     private Set<PostDTO> createdPosts;
+    private String profilePicture;
 
 
 }
