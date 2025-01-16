@@ -5,6 +5,7 @@ import com.hiroc.blog_api.dto.authentication.AuthenticationResponse;
 import com.hiroc.blog_api.dto.authentication.LoginRequest;
 import com.hiroc.blog_api.dto.authentication.RegisterRequest;
 import com.hiroc.blog_api.services.AuthenticationService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,7 +25,7 @@ public class AuthenticationController {
 
     @PostMapping("/login")
     public ResponseEntity<AuthenticationResponse> login(
-            @RequestBody LoginRequest request
+            @Valid @RequestBody LoginRequest request
     ){
         AuthenticationResponse response = authenticationService.login(request);
 
@@ -33,11 +34,16 @@ public class AuthenticationController {
 
     @PostMapping("/register")
     public ResponseEntity<AuthenticationResponse> register(
-            @RequestBody RegisterRequest request)
+            @Valid @RequestBody RegisterRequest request)
     {
         log.debug("Registration request: {}",request);
         AuthenticationResponse response = authenticationService.register((request));
         log.debug("Registration response: {}",response);
         return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/test")
+    public ResponseEntity<String> test(){
+        return ResponseEntity.ok("TESTED");
     }
 }

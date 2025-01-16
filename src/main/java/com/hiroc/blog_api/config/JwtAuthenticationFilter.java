@@ -26,8 +26,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         //Extract the JWT from the request
         final String authHeader = request.getHeader("Authorization");
+        log.debug("Headers: {}",request.getHeaderNames());
         if (authHeader==null || !authHeader.startsWith("Bearer")){
             //No JWT found
+            log.debug("AH: ",authHeader);
+            log.debug("No JWT found");
             filterChain.doFilter(request,response);
             return;
         }

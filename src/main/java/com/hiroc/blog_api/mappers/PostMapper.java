@@ -68,6 +68,7 @@ public class PostMapper {
                 .author(userMapper.toSummary(post.getAuthor()))
                 .tags(post.getTags().stream().map(tagMapper::toSummary).collect(Collectors.toSet()))
                 .like_count(post.getLikes().size())
+                .thumbnail(post.getThumbnail())
                 .build();
 
         return postSummary;

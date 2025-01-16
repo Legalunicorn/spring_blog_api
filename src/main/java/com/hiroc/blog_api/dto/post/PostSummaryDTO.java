@@ -20,6 +20,7 @@ public class PostSummaryDTO {
     private String title;
     private String body;
     private boolean draft;
+    private String thumbnail;
     private UserSummaryDTO author;
     //missing tags and comments?..
     //NEW: tags Summary

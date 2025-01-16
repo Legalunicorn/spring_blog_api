@@ -30,11 +30,17 @@ public class AuthenticationService {
                 .password(passwordEncoder.encode(request.getPassword()))
                 .role(Role.USER)
                 .build();
+
+        //first need to check if the user exists first
+        userRepository.findByUsername(request.getUsername())
+                        .ifPresent(u-> {throw new RuntimeException("Username has been taken");});
+
         userRepository.save(user);
         String token = jwtService.generateToken(user);
         log.debug("The register token is {}",token);
         return AuthenticationResponse.builder()
                 .token(token)
+                .username(user.getUsername())
                 .build();
 
     }
@@ -52,7 +58,7 @@ public class AuthenticationService {
 
         String token = jwtService.generateToken(user);
         log.debug("The login token is {}",token);
-        return new AuthenticationResponse(token);
+        return new AuthenticationResponse(token,user.getUsername() );
     }
 
 
