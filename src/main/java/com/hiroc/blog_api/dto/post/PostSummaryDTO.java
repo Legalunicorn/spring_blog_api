@@ -26,6 +26,7 @@ public class PostSummaryDTO {
     //NEW: tags Summary
     private Set<TagSummaryDTO> tags;
     private int like_count;
+    private int comment_count;
 
 
 
