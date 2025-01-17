@@ -47,6 +47,7 @@ public class AuthenticationService {
         return AuthenticationResponse.builder()
                 .token(token)
                 .username(user.getUsername())
+                .profilePicture(user.getProfilePicture())
                 .build();
 
     }
@@ -64,7 +65,7 @@ public class AuthenticationService {
 
         String token = jwtService.generateToken(user);
         log.debug("The login token is {}",token);
-        return new AuthenticationResponse(token,user.getUsername() );
+        return new AuthenticationResponse(token,user.getUsername(),user.getProfilePicture() );
     }
 
 
