@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -20,7 +21,17 @@ public interface PostRepository extends JpaRepository<Post,Integer> {
             " p.draft = false")
     Set<Post> findPublishedPostsByAuthorUsername (String username);
 
-    Set<Post> getPostByDraftFalse();
+    @Query("select p from Post p where p.draft = false order by p.createdOn desc")
+    List<Post> getPostByDraftFalseOrderByCreateOnDesc();
+
+    @Query("""
+            select p from Post p 
+            left join p.likes l 
+            where p.draft=false
+            group by p 
+            order by count(l) desc
+            """)
+    List<Post> getPostsByDraftFalseOrderByLikeCount();
 
     @Query("""
             select p from Post p 

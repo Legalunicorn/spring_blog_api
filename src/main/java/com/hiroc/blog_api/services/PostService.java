@@ -19,6 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -57,8 +58,20 @@ public class PostService {
         return posts;
     }
 
-    public Set<Post> findPublishedPosts(){
-        Set<Post> published_posts = postRepository.getPostByDraftFalse();
+    public List<Post> findPublishedPosts(String sort){
+
+        List<Post> published_posts = new ArrayList<>();
+        log.debug("Sort is: {}",sort);
+        if (sort==null || sort.equals("recent")){
+            log.debug("sortig by recent now");
+            published_posts= postRepository.getPostByDraftFalseOrderByCreateOnDesc();
+            published_posts.forEach(post ->
+                    log.debug("Post: id={}, createdOn={}", post.getId(), post.getCreatedOn())
+            );
+        } else {
+            published_posts = postRepository.getPostsByDraftFalseOrderByLikeCount();
+        }
+
         log.debug("{} published posts fetched",published_posts.size());
         return published_posts;
     }

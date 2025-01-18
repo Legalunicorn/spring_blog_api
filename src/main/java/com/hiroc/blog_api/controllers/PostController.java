@@ -19,6 +19,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -41,9 +42,9 @@ public class PostController {
 
     //tested with post man
     @GetMapping()
-    public ResponseEntity<Set<PostSummaryDTO>> getAllPublishedPosts(){
-        Set<Post> posts = postService.findPublishedPosts();
-        Set<PostSummaryDTO> posts_dto = posts.stream().map(postMapper::toSummary).collect(Collectors.toSet());
+    public ResponseEntity<List<PostSummaryDTO>> getAllPublishedPosts(@RequestParam(required=false) String sort){
+        List<Post> posts = postService.findPublishedPosts(sort);
+        List<PostSummaryDTO> posts_dto = posts.stream().map(postMapper::toSummary).collect(Collectors.toList());
         return ResponseEntity.ok(posts_dto);
     }
 
