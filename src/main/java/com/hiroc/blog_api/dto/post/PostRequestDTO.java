@@ -16,10 +16,9 @@ import java.util.List;
 @NoArgsConstructor
 public class PostRequestDTO {
 
-    @NotNull
-    @Size(max=300)
+    @Size(min=1,max=150)
     private String title;
-    @NotNull
+    @Size(min=1,max=50000)
     private String body;
     private String thumbnail;
     private List<String> tags;
