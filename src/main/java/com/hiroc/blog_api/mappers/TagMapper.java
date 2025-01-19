@@ -49,6 +49,9 @@ public class TagMapper {
                 .draft(post.isDraft())
                 .createdOn(post.getCreatedOn())
                 .updatedOn(post.getUpdatedOn())
+                .thumbnail(post.getThumbnail())
+                .like_count(post.getLikes().size())
+                .comment_count(post.getComments().size())
                 .author(userMapper.toSummary(post.getAuthor()))
                 .build();
     }
