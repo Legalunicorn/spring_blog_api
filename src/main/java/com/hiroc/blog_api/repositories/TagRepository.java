@@ -22,4 +22,12 @@ public interface TagRepository extends JpaRepository<Tag,Integer> {
             where t.name=:tag_name
             """)
     Tag findTagWithPosts(String tag_name);
+
+    @Query("""
+            select t from Tag t 
+            left join t.posts p
+            group by t
+            order by count(p) desc
+            """)
+    Set<Tag> findTagsOrderByPostCount();
 }
