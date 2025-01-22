@@ -9,10 +9,12 @@ import com.hiroc.blog_api.exceptions.PostNotFoundException;
 import com.hiroc.blog_api.repositories.CommentRepository;
 import com.hiroc.blog_api.repositories.PostRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class CommentService {
 
     private final CommentRepository commentRepository;
@@ -23,6 +25,7 @@ public class CommentService {
         Post post = postRepository.findById(request.getPostId())
                 .orElseThrow(()-> new PostNotFoundException(request.getPostId()));
 
+        log.debug("The comment post id is {}",post.getId());
 
         Comment comment = Comment.builder()
                 .body(request.getBody())
