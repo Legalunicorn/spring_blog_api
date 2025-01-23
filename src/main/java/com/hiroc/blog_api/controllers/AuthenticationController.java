@@ -41,9 +41,4 @@ public class AuthenticationController {
         log.debug("Registration response: {}",response);
         return ResponseEntity.ok(response);
     }
-
-    @PostMapping("/test")
-    public ResponseEntity<String> test(){
-        return ResponseEntity.ok("TESTED");
-    }
 }
