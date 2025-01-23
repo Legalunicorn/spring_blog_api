@@ -33,7 +33,7 @@ public class UserController {
     private final PostMapper postMapper;
 
 
-    @GetMapping("/{username}")
+    @GetMapping("/{username}") //in-use
     public ResponseEntity<UserProfileDTO> getUserProfile(@PathVariable String username){
         User user = userService.getUser(username);
         Set<Post> posts = postService.findPublishesPostsByAuthorUsername(username);
@@ -45,7 +45,20 @@ public class UserController {
         return ResponseEntity.ok(userProfileDTO);
     }
 
-    @PatchMapping("/{username}")
+    @GetMapping("/{username}/drafts")
+    @PreAuthorize("#username==authentication.principal.username")
+    public ResponseEntity<UserProfileDTO> getUserDraftedProfile(@PathVariable String username){
+        User user = userService.getUser(username);
+        Set<Post> posts = postService.findDraftedPostByUser(username);
+        UserProfileDTO userProfileDTO = UserProfileDTO
+                .builder()
+                .posts(posts.stream().map(postMapper::toSummary).collect(Collectors.toSet()))
+                .user(userMapper.toSummary(user))
+                .build();
+        return ResponseEntity.ok(userProfileDTO);
+    }
+
+    @PatchMapping("/{username}")  //in-use
     @PreAuthorize("#userRequestDTO.getUsername()==authentication.principal.username")
     public ResponseEntity<UserSummaryDTO> updateProfile(@Valid @RequestBody UserRequestDTO userRequestDTO){
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();

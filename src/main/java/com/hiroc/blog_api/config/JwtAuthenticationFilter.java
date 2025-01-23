@@ -1,6 +1,7 @@
 package com.hiroc.blog_api.config;
 
 import com.hiroc.blog_api.services.JwtService;
+import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -29,7 +30,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         log.debug("Headers: {}",request.getHeaderNames());
         if (authHeader==null || !authHeader.startsWith("Bearer")){
             //No JWT found
-            log.debug("AH: ",authHeader);
             log.debug("No JWT found");
             filterChain.doFilter(request,response);
             return;
@@ -42,7 +42,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             username = jwtService.extractUsername(jwt);
             log.debug("extracted username: {}",username);
         } catch(Exception e){
+            //Send an exception
+//            response.sendError(HttpServletResponse.SC_UNAUTHORIZED,"JWT Token is invalid/expired. Please login again");
             log.warn("JWT Token has expired or is invalid {} ",e.getMessage());
+            throw new JwtException("JWT Token expired/invalid. Please login again");
         }
 //        final String username = jwtService.extractUsername(jwt);
         if (username !=null && SecurityContextHolder.getContext().getAuthentication()==null){
