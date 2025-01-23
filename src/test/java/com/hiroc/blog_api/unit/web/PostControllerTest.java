@@ -88,7 +88,7 @@ public class PostControllerTest {
     @Test
     @DisplayName("TEST: create post no title - Bad request")
     void nullPostTitleBadRequest() throws Exception {
-        default_request.setTitle(null);
+        default_request.setTitle("");
 
         mockMvc.perform(post("/api/posts")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -98,7 +98,7 @@ public class PostControllerTest {
     @Test
     @DisplayName("TEST: create post no body - Bad request")
     void nullPostBodyBadRequest() throws Exception {
-        default_request.setBody(null);
+        default_request.setBody("");
 
         mockMvc.perform(post("/api/posts")
                         .contentType(MediaType.APPLICATION_JSON)
