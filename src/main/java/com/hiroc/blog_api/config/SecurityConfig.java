@@ -58,7 +58,7 @@ public class SecurityConfig
             public void addCorsMappings(CorsRegistry registry){
                 registry.addMapping("/**")
                         .allowedMethods("*")
-                        .allowedOrigins("http://localhost:5173","https://spring-blog-frontend.vercel.app")
+                        .allowedOrigins("http://localhost:5173","https://spring-blog-frontend.vercel.app","https://hiroc.vip")
                         .allowedHeaders("*")
                         .allowCredentials(true)
                         .exposedHeaders("Authorization");
